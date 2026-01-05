@@ -1,0 +1,29 @@
+services:
+  # --- Backend ---
+  api:
+    build: 
+      context: ./api
+      dockerfile: Dockerfile
+    image: talos-chat-api:latest
+    container_name: talos-chat-api
+    ports:
+      - "8100:8100"
+    environment:
+      - EXAMPLES_MODE=${EXAMPLES_MODE:-released}
+    networks:
+      - chat-net
+    profiles:
+      - released
+
+  # --- Local SDK Mount (Workspace Mode) ---
+  api-workspace:
+    extends: api
+    container_name: talos-chat-api-workspace
+    volumes:
+      - ${TALOS_SDK_PATH:-./}:/mnt/workspace/talos-sdk-py:ro
+    profiles:
+      - workspace
+
+networks:
+  chat-net:
+    driver: bridge
