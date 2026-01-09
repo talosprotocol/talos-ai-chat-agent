@@ -8,3 +8,9 @@ A feature-complete, standalone Secure AI Chat application built on [Talos Protoc
 - **Audit**: Blockchain-anchored message logs
 - **Persistence**: SQLite storage
 - **UI**: Modern Next.js interface
+
+## License
+
+Licensed under the Apache License 2.0. See [LICENSE](LICENSE).
+
+Licensed under the Apache License 2.0. See [LICENSE](LICENSE).
