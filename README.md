@@ -9,8 +9,9 @@ A feature-complete, standalone Secure AI Chat application built on [Talos Protoc
 - **Persistence**: SQLite storage
 - **UI**: Modern Next.js interface
 
-## License
+## References
+1. [Talos Wiki](https://github.com/talosprotocol/talos/wiki)
 
-Licensed under the Apache License 2.0. See [LICENSE](LICENSE).
+## License
 
 Licensed under the Apache License 2.0. See [LICENSE](LICENSE).
