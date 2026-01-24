@@ -4,3 +4,4 @@ pydantic==2.6.0
 sqlalchemy==2.0.25
 cryptography==42.0.0
 # talos-sdk-py set at runtime via entrypoint
+requests>=2.31.0
