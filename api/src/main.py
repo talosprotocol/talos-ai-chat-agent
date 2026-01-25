@@ -86,22 +86,24 @@ async def send_message(req: ChatRequest):
         raise HTTPException(status_code=400, detail="No message content provided")
 
     # 3. Call AI Gateway (Live)
-    ai_gateway_url = os.getenv("AI_GATEWAY_URL", "http://talos-ai-gateway:8000")
+    ai_gateway_url = os.getenv("AI_GATEWAY_URL", "http://ollama:11434")
     api_token = os.getenv("TALOS_API_TOKEN", "dev-token")
+    model_name = os.getenv("AI_MODEL", "tinyllama:latest")
     
     response_text = f"Secure Echo: {user_message}" # Fallback
     
     try:
         # We need a proper chat request structure
         payload = {
-            "model": "gpt-3.5-turbo", # Default or from env
+            "model": model_name,
             "messages": [{"role": "user", "content": user_message}]
         }
+        # Ollama OpenAI endpoint is at /v1/chat/completions
         res = requests.post(
             f"{ai_gateway_url}/v1/chat/completions",
             json=payload,
             headers={"Authorization": f"Bearer {api_token}"},
-            timeout=10
+            timeout=120 # Extended timeout for local AI inference (esp. first run)
         )
         if res.status_code == 200:
             data = res.json()
@@ -113,6 +115,8 @@ async def send_message(req: ChatRequest):
              logger.warning(f"AI Gateway failed: {res.status_code} {res.text}")
              if res.status_code == 404:
                   response_text += " [AI Gateway Not Found]"
+             else:
+                  response_text += f" [AI Error: {res.status_code}]"
     except Exception as e:
         logger.error(f"Failed to call AI Gateway: {e}")
         response_text += " [AI Offline]"
@@ -126,10 +130,29 @@ async def send_message(req: ChatRequest):
     }
 
 @app.get("/v1/chat/summary")
-def get_summary(session_id: str):
-    count = SESSIONS.get(session_id, {}).get("count", 0)
+def get_summary(session_id: str = "demo-session-v1"):
+    session_data = SESSIONS.get(session_id, {"count": 0})
+    count = session_data.get("count", 0)
+    
+    # Mock data for demonstration purposes, matching frontend ChatSummary interface
     return {
         "session_id": session_id,
-        "message_count": count,
+        "user_id": "talos-user-01",
+        "assistant_id": "secure-llm-01",
+        "blockchain_height": 1422, # Simulated height
+        "pending_data": 0,
+        "conversations": 1,
+        "messages": count,
+        "message_count": count, # Keep legacy field if needed
+        "tool_calls": 0,
+        "ollama_available": True,
         "security_level": "maximum" if SDK_AVAILABLE else "basic"
+    }
+
+@app.get("/v1/chat/stats")
+def get_stats():
+    return {
+        "connected_peers": 1,
+        "active_sessions": len(SESSIONS),
+        "total_messages": sum(s.get("count", 0) for s in SESSIONS.values())
     }
