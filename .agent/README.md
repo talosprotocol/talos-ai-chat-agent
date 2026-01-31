@@ -1,4 +1,5 @@
 # Agent workspace: services/ai-chat-agent
+> **Project**: services/ai-chat-agent
 
 This folder contains agent-facing context, tasks, workflows, and planning artifacts for this submodule.
 
