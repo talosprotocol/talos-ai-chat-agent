@@ -32,7 +32,7 @@ class SimulatedAuditLogger:
         logger.info(f"AUDIT_EVENT: {event_type} - {json.dumps(data)}")
         # In a real system, this would push to the audit-service
 
-audit_logger = MockAuditLogger()
+audit_logger = SimulatedAuditLogger()
 
 # --- SDK Wrapper ---
 
@@ -80,11 +80,11 @@ async def send_message(req: ChatRequest):
     if req.session_id not in SESSIONS:
         logger.info(f"Initializing new session: {req.session_id}")
         raw_secret = os.getenv("CHAT_SHARED_SECRET")
-        if raw_secret:
-             shared_key = hashlib.sha256(raw_secret.encode()).digest()
-        else:
-             shared_key = b'0'*32 # Legacy fallback for demo compat
-             logger.warning("Using mock shared secret (CHAT_SHARED_SECRET not set)")
+        if not raw_secret:
+             logger.error("CHAT_SHARED_SECRET not set. Cannot initialize secure session.")
+             raise HTTPException(status_code=500, detail="Security configuration missing")
+             
+        shared_key = hashlib.sha256(raw_secret.encode()).digest()
 
         if SDK_AVAILABLE:
             SESSIONS[req.session_id] = {
