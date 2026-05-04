@@ -6,8 +6,7 @@ import requests
 import hashlib
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Dict, Any, Optional
-from datetime import datetime, timezone
+from typing import Dict, Any
 
 # Use consolidated talos package
 try:
@@ -70,6 +69,7 @@ def health():
     return {
         "app": "talos-ai-chat-agent",
         "status": "online",
+        "contract_hash": os.getenv("TALOS_CONTRACT_HASH", "unknown"),
         "sdk_available": SDK_AVAILABLE,
         "active_sessions": len(SESSIONS)
     }

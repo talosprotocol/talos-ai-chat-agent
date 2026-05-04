@@ -21,6 +21,7 @@ services:
     container_name: talos-chat-api-workspace
     volumes:
       - ${TALOS_SDK_PATH:-./}:/mnt/workspace/talos-sdk-py:ro
+      - ${TALOS_CONTRACTS_PATH:-../../contracts/python}:/mnt/workspace/talos-contracts-py:ro
     profiles:
       - workspace
 
